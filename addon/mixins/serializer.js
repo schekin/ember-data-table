@@ -13,7 +13,7 @@ export default Mixin.create({
       result.meta.pagination = this.createPageMeta(payload.links);
     }
     if (payload.meta) {
-      result.meta.count = payload.meta.count;
+      result.meta["count"] = payload.meta['page-count'];
     }
 
     return result;
@@ -36,28 +36,22 @@ export default Mixin.create({
    */
   createPageMeta(data) {
     let meta = {};
-
     Object.keys(data).forEach(type => {
       const link = data[type];
       meta[type] = {};
-
-      let a = document.createElement('a');
-      a.href = link;
-      let query = a.search.slice(1);
-
-      query.split('&').forEach(pairs => {
+      let anchor = document.createElement('a');
+      anchor.href = link;
+      anchor.search.slice(1).split('&').forEach(pairs => {
         const [param, value] = pairs.split('=');
-
-        if (param === 'page[number]') {
+        if (param == 'page%5Bnumber%5D') {
           meta[type].number = parseInt(value);
-        } else if (param === 'page[size]') {
+        }
+        if (param == 'page%5Bsize%5D') {
           meta[type].size = parseInt(value);
         }
-
       });
-      a = null;
+      anchor = null;
     });
-
     return meta;
   }
 
